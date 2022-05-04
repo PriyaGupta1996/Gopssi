@@ -5,10 +5,13 @@ const dotenv = require("dotenv")
 
 //custom modules
 const chats = require("./data/data.js")
+const connectDB = require("../backend/config/db.js")
+const colors = require("colors")
 
 //express instance
 const app = express()
 dotenv.config()
+connectDB()
 
 
 app.get("/", (req, res) => {
@@ -30,4 +33,4 @@ app.get("/api/chat/:id", (req, res) => {
 
 const PORT = process.env.PORT || 5000
 
-app.listen(PORT, console.log("server started"))
+app.listen(PORT, console.log(`server started ${PORT}`.yellow.bold))
