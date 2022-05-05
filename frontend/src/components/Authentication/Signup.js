@@ -88,7 +88,7 @@ const Signup = () => {
                 w="100%"
                 colorScheme="blue"
                 style={{ marginTop: 15 }}
-                onClick={submitHander}
+                onClick={submitHander} f
             >
                 Submit
             </Button>

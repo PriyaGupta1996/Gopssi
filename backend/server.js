@@ -1,35 +1,26 @@
 //libraries
 const express = require("express")
 const dotenv = require("dotenv")
+const colors = require("colors")
 
 
 //custom modules
 const chats = require("./data/data.js")
 const connectDB = require("../backend/config/db.js")
-const colors = require("colors")
+const userRoutes = require("./routes/userRoutes")
 
 //express instance
 const app = express()
 dotenv.config()
 connectDB()
 
+app.use(express.json()); // to accept JSON data
 
 app.get("/", (req, res) => {
     res.send("API is running successfully here !!")
 })
 
-
-app.get("/api/chat", (req, res) => {
-    console.log(chats)
-    res.send(chats)
-})
-
-app.get("/api/chat/:id", (req, res) => {
-    console.log(req.params.id)
-    const singleChat = chats.find((c) => c._id === req.params.id)
-    console.log(singleChat)
-    res.send(singleChat)
-})
+app.use('/api/user', userRoutes)
 
 const PORT = process.env.PORT || 5000
 
