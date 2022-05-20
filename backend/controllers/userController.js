@@ -41,7 +41,7 @@ const registerUser = asyncHandler(async (req, res) => {
     }
     else {
         res.status(400);
-        throw new Error("Server Error, try again after sometime")
+        throw new Error("Server Error,Please try again after sometime")
     }
 })
 

@@ -1,5 +1,40 @@
-import { FormControl, VStack, FormLabel, Input, InputRightElement, Button, InputGroup } from '@chakra-ui/react'
+import { FormControl, VStack, FormLabel, Input, InputRightElement, Button, InputGroup, toast } from '@chakra-ui/react'
 import { React, useState } from 'react'
+import { useToast } from '@chakra-ui/react'
+import { v4 as uuidv4 } from 'uuid';
+
+//import { post } from '../../../../backend/routes/userRoutes'
+
+import AWS from 'aws-sdk'
+
+const S3_BUCKET = 'gopssi-profile-pictures';
+const REGION = 'us-east-1';
+
+AWS.config.update({
+    accessKeyId: 'AKIAV7NZNQ4C22XFOZHC',
+    secretAccessKey: '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'
+})
+
+
+
+const profilePictures = new AWS.S3({
+    params: { Bucket: S3_BUCKET },
+    region: REGION,
+})
+
+const uploadFile = () => {
+
+    const fileName = uuidv4();
+    const params = {
+        Bucket: S3_BUCKET,
+        Key: fileName
+    };
+
+    profilePictures.putObject(params).send((err) => {
+        if (err) console.log(err)
+    })
+}
+
 
 const Signup = () => {
     const [showPass, setShowPass] = useState(false)
@@ -8,6 +43,9 @@ const Signup = () => {
     const [email, setEmail] = useState();
     const [password, setPassword] = useState();
     const [confirmpassword, setConfirmPassword] = useState();
+    const [pic, setPic] = useState()
+    const [loading, setLoading] = useState();
+    const toast = useToast()
 
     const handleClickPass = () => {
         setShowPass(!showPass)
@@ -18,9 +56,41 @@ const Signup = () => {
     const submitHander = () => {
 
     }
-    const postDetails = () => {
+    const postDetails = (pics) => {
+        setLoading(true)
+        if (pics === undefined) {
+            toast({
+                title: "Please select an image",
+                status: "warning",
+                duration: "5000",
+                isClosable: true,
+                position: "center"
+            })
 
+            return;
+        }
+
+        if (pics.type === "image/jpeg" || pics.type === "image/png") {
+            setLoading(true)
+            uploadFile()
+            setLoading(false)
+        }
+
+        else {
+            toast({
+                title: "Please select an image",
+                status: "warning",
+                duration: "5000",
+                isClosable: true,
+                position: "center"
+            })
+            setLoading(false)
+            return
+        } // api call
     }
+
+
+
 
     return (
         <VStack spacing="5px">
@@ -88,11 +158,12 @@ const Signup = () => {
                 w="100%"
                 colorScheme="blue"
                 style={{ marginTop: 15 }}
-                onClick={submitHander} f
+                onClick={submitHander}
+                isLoading={loading}
             >
                 Submit
             </Button>
-        </VStack>
+        </VStack >
     )
 }
 
