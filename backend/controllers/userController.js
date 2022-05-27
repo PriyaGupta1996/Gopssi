@@ -1,3 +1,6 @@
+// If you're using Async/await in an Express app, you want to use a wrapper function like express-async-handler. 
+//This lets you write asynchronous code without try/catch blocks.
+
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel")
 const bcrypt = require("bcrypt")
@@ -77,4 +80,18 @@ const authUser = asyncHandler(async (req, res) => {
     }
 })
 
-module.exports = { registerUser, authUser }
+// /api/user?search=priya
+const allUsers = asyncHandler(async (req, res) => {
+
+    const keyword = req.query.search ? {
+        $or: [
+            { name: { $regex: req.query.search, $options: "i" } },  // i means case in-sensitivity.
+            { email: { $regex: req.query.search, $options: "i" } }
+        ]
+    } : {};
+    console.log(JSON.stringify(keyword))
+    const users = await User.find(keyword).find({ _id: { $ne: req.user._id } })
+    res.send(users)
+})
+module.exports = { registerUser, authUser, allUsers }
+

@@ -1,14 +1,21 @@
-import { FormControl, VStack, FormLabel, Input, InputRightElement, Button, InputGroup, toast } from '@chakra-ui/react'
+//TO DO : fix toast, when not chosen file, it should clear the selection. To display the errors of user already existing.
+//to fix the route (test once)
+
+
+import { FormControl, VStack, FormLabel, Input, InputRightElement, Button, InputGroup, useToast } from '@chakra-ui/react'
 import { React, useState } from 'react'
-import { useToast } from '@chakra-ui/react'
 import { v4 as uuidv4 } from 'uuid';
+import axios from "axios"
+import { useHistory } from 'react-router-dom'
 
 //import { post } from '../../../../backend/routes/userRoutes'
 
 import AWS from 'aws-sdk'
 
+
 const S3_BUCKET = 'gopssi-profile-pictures';
 const REGION = 'us-east-1';
+
 
 AWS.config.update({
     accessKeyId: 'AKIAV7NZNQ4C22XFOZHC',
@@ -22,21 +29,11 @@ const profilePictures = new AWS.S3({
     region: REGION,
 })
 
-const uploadFile = () => {
 
-    const fileName = uuidv4();
-    const params = {
-        Bucket: S3_BUCKET,
-        Key: fileName
-    };
-
-    profilePictures.putObject(params).send((err) => {
-        if (err) console.log(err)
-    })
-}
 
 
 const Signup = () => {
+    const toast = useToast()
     const [showPass, setShowPass] = useState(false)
     const [showConfirm, setShowConfirm] = useState(false)
     const [name, setName] = useState();
@@ -45,7 +42,20 @@ const Signup = () => {
     const [confirmpassword, setConfirmPassword] = useState();
     const [pic, setPic] = useState()
     const [loading, setLoading] = useState();
-    const toast = useToast()
+    const history = useHistory()
+
+    const uploadFile = () => {
+
+        const fileName = uuidv4();
+        const params = {
+            Bucket: S3_BUCKET,
+            Key: fileName
+        };
+
+        profilePictures.putObject(params).send((err) => {
+            if (err) console.log(err)
+        })
+    }
 
     const handleClickPass = () => {
         setShowPass(!showPass)
@@ -53,19 +63,84 @@ const Signup = () => {
     const handleClickConfirm = () => {
         setShowConfirm(!showConfirm)
     }
-    const submitHander = () => {
+    const submitHander = async () => {
+        setLoading(true)
+        if (!name || !password || !confirmpassword) {
+            // toast({
+            //     title: "Please fill all the fields",
+            //     status: "warning",
+            //     duration: 5000,
+            //     isClosable: true,
+            //     position: "center"
+            // })
+            alert("Please fill all the fields")
+            setLoading(false)
+            return
+        }
+
+        if (password !== confirmpassword) {
+            // toast({
+            //     title: "Password do not match",
+            //     status: "warning",
+            //     duration: 5000,
+            //     isClosable: true,
+            //     position: "center"
+            // })
+            alert("Password dont match")
+            setLoading(false)
+            return
+        }
+
+        try {
+            const config = {
+                headers: {
+                    "Content-type": "application/json"
+                }
+            }
+            const { data } = await axios.post("/api/user", { name, email, password, pic }, config)
+
+            // toast({
+            //     title: "Successfully registered the user",
+            //     status: "success",
+            //     duration: 5000,
+            //     isClosable: true,
+            //     position: "center"
+            // })
+            alert("Successfully registered the user")
+            localStorage.setItem("userInfo", JSON.stringify(data))
+            setLoading(false)
+            history.push("/chats")
+        }
+        catch (error) {
+
+            // toast({
+            //     title: "Please try again after sometime",
+            //     description: error.response.data.message,
+            //     status: "error",
+            //     duration: 5000,
+            //     isClosable: true,
+            //     position: "center"
+            // })
+            alert("This Email is already registered with us, Please login or use different Email Id")
+            setLoading(false)
+
+        }
 
     }
     const postDetails = (pics) => {
         setLoading(true)
         if (pics === undefined) {
-            toast({
-                title: "Please select an image",
-                status: "warning",
-                duration: "5000",
-                isClosable: true,
-                position: "center"
-            })
+            // toast({
+            //     title: "Please select an image",
+            //     status: "warning",
+            //     duration: "5000",
+            //     isClosable: true,
+            //     position: "center"
+            // })
+
+            alert("PLease select an image")
+
+            setLoading(false)
 
             return;
         }
@@ -77,14 +152,16 @@ const Signup = () => {
         }
 
         else {
-            toast({
-                title: "Please select an image",
-                status: "warning",
-                duration: "5000",
-                isClosable: true,
-                position: "center"
-            })
+            // toast({
+            //     title: "Please select an image",
+            //     status: "warning",
+            //     duration: "5000",
+            //     isClosable: true,
+            //     position: "center"
+            // })
+            alert("Please select an image")
             setLoading(false)
+            setPic(" ")
             return
         } // api call
     }

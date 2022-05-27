@@ -12,5 +12,5 @@ const userModel = mongoose.Schema({
         timeStamps: true
     })
 
-const Users = mongoose.model("User", userModel)
+const Users = mongoose.model("User", userModel) //Mongoose automatically looks for the plural, lowercased version of your model name.
 module.exports = Users
