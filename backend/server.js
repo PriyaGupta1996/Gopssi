@@ -8,6 +8,7 @@ const colors = require("colors")
 const chats = require("./data/data.js")
 const connectDB = require("../backend/config/db.js")
 const userRoutes = require("./routes/userRoutes")
+const chatRoutes = require("../backend/routes/chatRoutes")
 const { notFound, errorHandler } = require("../backend/middleware/errorMiddleware")
 
 //express instance
