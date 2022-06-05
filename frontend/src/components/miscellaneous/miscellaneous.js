@@ -56,7 +56,7 @@ const MyChats = () => {
                 d="flex"
                 w="100%"
                 justifyContent="space-between"
-                alignItems="center">MyChats
+                alignItems="center">My Chats
 
                 <Button d="flex" fontSize={{ base: "17px", md: "10px", lg: "17px" }} rightIcon={<AddIcon />}>
                     New Group Chat
