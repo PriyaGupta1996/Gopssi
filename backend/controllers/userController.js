@@ -69,7 +69,8 @@ const authUser = asyncHandler(async (req, res) => {
                 _id: userExists._id,
                 name: userExists.name,
                 email: userExists.email,
-                pic: userExists.pic
+                pic: userExists.pic,
+                token: generateToken(userExists._id)
             })
         }
         else {
@@ -91,6 +92,7 @@ const allUsers = asyncHandler(async (req, res) => {
     } : {};
     console.log(JSON.stringify(keyword))
     const users = await User.find(keyword).find({ _id: { $ne: req.user._id } })
+    //   console.log(users)
     res.send(users)
 })
 module.exports = { registerUser, authUser, allUsers }

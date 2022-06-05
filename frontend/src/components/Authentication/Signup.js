@@ -121,7 +121,7 @@ const Signup = () => {
             //     isClosable: true,
             //     position: "center"
             // })
-            alert("This Email is already registered with us, Please login or use different Email Id")
+            alert("User already exists.")
             setLoading(false)
 
         }

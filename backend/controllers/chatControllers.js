@@ -22,7 +22,7 @@ const accessChat = asyncHandler(async (req, res) => {
             ]
         }).populate("users", " -password").populate("latestMessage"); // populate the users array of chat table with all details of users except password
 
-        // console.log("hey", JSON.stringify(isChat))
+
         // xyz;
 
         isChat = await Users.populate(isChat, { path: "latestMessage.sender", select: "name pic email" }) // didnt understand much
@@ -30,6 +30,8 @@ const accessChat = asyncHandler(async (req, res) => {
         if (isChat.length > 0) {
 
             res.send(isChat[0])
+            console.log("hey", JSON.stringify(isChat[0]))
+            return
         }
         else {
             let chatData = {
@@ -44,12 +46,12 @@ const accessChat = asyncHandler(async (req, res) => {
 
                 const createdChat = await Chat.create(chatData)
                 const fullChat = await Chat.findOne({ id: createdChat._id }).populate("users", " - password")
-
+                console.log(fullChat)
                 res.status(200).send(fullChat)
             }
             catch (error) {
                 res.status(400)
-                throw new Error(error.message)
+                throw new Error(error)
             }
         }
     }
@@ -59,7 +61,7 @@ const accessChat = asyncHandler(async (req, res) => {
     }
 })
 
-const fetchChats = asyncHandler(async (req, res) => {
+const fetchAllChats = asyncHandler(async (req, res) => {
     try { //find all the chats of logged in user
         console.log(req.user._id)
         Chat.find({ users: { $elemMatch: { $eq: req.user._id } } })
@@ -186,6 +188,6 @@ const groupRemove = asyncHandler(async (req, res) => {
     }
 
 })
-module.exports = { accessChat, fetchChats, createGroupChat, renameGroup, groupAdd, groupRemove }
+module.exports = { accessChat, fetchAllChats, createGroupChat, renameGroup, groupAdd, groupRemove }
 
 
