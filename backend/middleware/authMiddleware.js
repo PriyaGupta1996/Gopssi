@@ -9,6 +9,7 @@ const protect = asyncHandler(async (req, res, next) => {
     // hence splitting it to get the token
     if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
         try {
+            // console.log("in protect")
             token = req.headers.authorization.split(" ")[1];
             const decoded = jwt.verify(token, process.env.JWT_SECRET)
             //console.log(decoded)
