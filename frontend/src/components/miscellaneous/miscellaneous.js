@@ -4,9 +4,10 @@ import { ChatState } from '../../Context/ChatProvider'
 import { Box, Button, Stack, Text } from "@chakra-ui/react"
 import { AddIcon } from "@chakra-ui/icons"
 import ChatLoading from "../ChatLoading"
-import getSender from "../../config/ChatLogics"
+import GroupChatModal from './GroupChatModal'
+import { getSender } from "../../config/ChatLogics"
 
-const MyChats = () => {
+const MyChats = ({ fetchAgain }) => {
     const [loggedUser, setLoggedUser] = useState()
     const { selectedChat, chats, setChats, user, setSelectedChat } = ChatState()
 
@@ -34,7 +35,7 @@ const MyChats = () => {
     useEffect(() => {
         setLoggedUser(JSON.parse(localStorage.getItem("userInfo")))
         fetchAllChats()
-    }, [])
+    }, [fetchAgain])
 
 
     return (
@@ -58,9 +59,12 @@ const MyChats = () => {
                 justifyContent="space-between"
                 alignItems="center">My Chats
 
-                <Button d="flex" fontSize={{ base: "17px", md: "10px", lg: "17px" }} rightIcon={<AddIcon />}>
-                    New Group Chat
-                </Button>
+                <GroupChatModal>
+
+                    <Button d="flex" fontSize={{ base: "17px", md: "10px", lg: "17px" }} rightIcon={<AddIcon />} >
+                        New Group Chat
+                    </Button>
+                </GroupChatModal>
             </Box>
 
             <Box
@@ -88,7 +92,7 @@ const MyChats = () => {
                                     borderRadius="lg"
                                     key={chat._id}>
                                     <Text>
-                                        {!chat.isGroupChat ? getSender(loggedUser, chat.users) : (chat.chatName)}
+                                        {!chat.IsGroupChat ? getSender(loggedUser, chat.users) : (chat.chatName)}
                                     </Text>
 
 

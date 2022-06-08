@@ -7,7 +7,7 @@ const ProfileModal = ({ user, children }) => {
     return (
         <>
             {
-                children ? <span onClick={onOpen}>{children}</span> : (<IconButton d={{ base: "flex" }} icon={<ViewIcon />} onclick={onOpen} />)
+                children ? <span onClick={onOpen}>{children}</span> : (<IconButton d={{ base: "flex" }} icon={<ViewIcon />} onClick={onOpen} />)
             }
 
             {/* <Button onClick={onOpen}>{user.name}</Button> */}
@@ -39,7 +39,7 @@ const ProfileModal = ({ user, children }) => {
                         <Button colorScheme='blue' mr={3} onClick={onClose}>
                             Close
                         </Button>
-                        <Button variant='ghost'>Secondary Action</Button>
+
                     </ModalFooter>
                 </ModalContent>
             </Modal>

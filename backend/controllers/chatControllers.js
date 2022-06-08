@@ -99,7 +99,7 @@ const createGroupChat = asyncHandler(async (req, res) => {
                 chatName: req.body.name,
                 users: users,
                 IsGroupChat: true,
-                groupAdmin: req.user
+                groupAdmin: req.user._id
 
             })
 
@@ -140,7 +140,7 @@ const groupAdd = asyncHandler(async (req, res) => {
         {
             users: { $elemMatch: { $eq: userId } }
         })
-    //console.log(checkUser.users ? checkUser.users.length >)
+    console.log(checkUser)
     if (checkUser.users?.length > 0) {
         res.status(400)
         return res.send("User already part of group")
@@ -150,6 +150,8 @@ const groupAdd = asyncHandler(async (req, res) => {
         $push: { users: userId }
     }, { new: true }
     ).populate("users", "-password").populate("groupAdmin", "-password")
+
+
 
     if (!added) {
         res.status(404)
@@ -163,7 +165,7 @@ const groupAdd = asyncHandler(async (req, res) => {
 
 const groupRemove = asyncHandler(async (req, res) => {
     const { chatId, userId } = req.body
-
+    console.log(chatId, userId)
     const checkUser = await Chat.findById(chatId,
         {
             users: { $elemMatch: { $eq: userId } }
