@@ -34,6 +34,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
     const typingHandler = (e) => { setnewMessage(e.target.value) }
 
+    console.log("helllooo", selectedChat)
 
     const fetchMessage = async () => {
         console.log(selectedChat)
@@ -72,7 +73,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                         d="flex"
                         justifyContent={{ base: "space-between" }}
                         alignItems="center">
-                        < IconButton d={{ base: "flex", md: "none" }} icon={<ArrowBackIcon />} onclick={() => setSelectedChat("")} />
+                        < IconButton d={{ base: "flex", md: "none" }} icon={<ArrowBackIcon />} onClick={() => setSelectedChat("")} />
+                        {console.log("inside", selectedChat)}
                         {!selectedChat.IsGroupChat ?
                             (
                                 <>
