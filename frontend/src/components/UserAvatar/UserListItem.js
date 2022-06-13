@@ -3,7 +3,7 @@ import React from 'react'
 import { ChatState } from '../../Context/ChatProvider'
 
 const UserListItem = ({ user, handleFunction }) => {
-
+    console.log(user._id)
     return (
         <Box
             onClick={handleFunction}

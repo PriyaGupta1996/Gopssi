@@ -34,7 +34,7 @@ const sendMessage = asyncHandler(async (req, res) => {
 
     try {
         let message = await Message.create(newMessage)
-        console.log(message);
+        //   console.log(message);
         message = await User.populate(message, { path: "sender", select: "name pic" })
         message = await Chat.populate(message, { path: "chat", select: "chatName IsGroupChat users latestMessage groupAdmin" })
 

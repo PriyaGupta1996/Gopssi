@@ -5,7 +5,9 @@ import { ChatState } from '../Context/ChatProvider'
 import { getSender, getSenderFull } from "../config/ChatLogics"
 import ProfileModal from "../components/miscellaneous/ProfileModal"
 import UpdateGroupChatModal from "../components/miscellaneous/UpdateGroupChatModal"
+import ScrollableChat from "../components/ScrollableChat"
 import axios from "axios"
+import "./style.css"
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     const [messages, setmessages] = useState([])
     const [loading, setloading] = useState(false)
@@ -42,11 +44,11 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         try {
             const config = {
                 headers: {
-                    Authorization: `Bearer ${user.toke}`
+                    Authorization: `Bearer ${user.token}`
                 }
             }
             setloading(true)
-            const { data } = await axios.get(`/api/message/${selectedChat._id},config`)
+            const { data } = await axios.get(`/api/message/${selectedChat._id}`, config)
             setmessages(data)
             setloading(false)
             console.log(messages)
@@ -57,9 +59,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
 
 
-    // useEffect(() => {
-    //     fetchMessage()
-    // }, [selectedChat])
+    useEffect(() => {
+        fetchMessage()
+    }, [selectedChat])
 
     return (
         <>
@@ -84,7 +86,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                             (
                                 <>
                                     {selectedChat.chatName.toUpperCase()}
-                                    {<UpdateGroupChatModal fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} />}
+                                    {<UpdateGroupChatModal fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} fetchMessage={fetchMessage} />}
                                 </>)
                         }
                     </Text>
@@ -94,7 +96,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                         {loading ? (<Spinner size="xl"
                             w={20} h={20} alignSelf="center" margin="auto"
                         />) : <>
-                            <div></div>
+                            <div className='messages'>
+                                <ScrollableChat messages={messages} />
+                            </div>
                             <FormControl onKeyDown={sendMessage} isRequired mt={3}>
                                 <Input variant="filled" bg="#e0e0e0" placeholder="Enter a message..." onChange={typingHandler} value={newMessage} />
                             </FormControl>
