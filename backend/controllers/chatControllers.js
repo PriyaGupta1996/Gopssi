@@ -11,17 +11,19 @@ const accessChat = asyncHandler(async (req, res) => {
         console.log("UserId params not sent with request")
     }
     else if (req.user._id.toString() !== userId) {
-        console.log("Hey")
+        //   console.log("Hey")
         // console.log("first", typeof (JSON.stringify(req.user._id)))
         // console.log("second", typeof (userId))
+        //should not be a group chat but a private chat
         let isChat = await Chat.find({
-            isGroupChat: false, //should not be a group chat but a private chat
+            IsGroupChat: false,
             $and: [
                 { users: { $elemMatch: { $eq: req.user._id } } },  // logged in user
                 { users: { $elemMatch: { $eq: userId } } },//requested user
             ]
         }).populate("users", " -password").populate("latestMessage"); // populate the users array of chat table with all details of users except password
 
+        console.log("ischat is", isChat)
 
         // xyz;
 
@@ -30,7 +32,7 @@ const accessChat = asyncHandler(async (req, res) => {
         if (isChat.length > 0) {
 
             res.send(isChat[0])
-            console.log("hey", JSON.stringify(isChat[0]))
+            //     console.log("hey", JSON.stringify(isChat[0]))
             return
         }
         else {
@@ -39,6 +41,7 @@ const accessChat = asyncHandler(async (req, res) => {
                 isGroupChat: false,
                 users: [req.user._id, userId]
             }
+
 
             //storing in database
 
@@ -63,7 +66,7 @@ const accessChat = asyncHandler(async (req, res) => {
 
 const fetchAllChats = asyncHandler(async (req, res) => {
     try { //find all the chats of logged in user
-        console.log(req.user._id)
+        //  console.log(req.user._id)
         Chat.find({ users: { $elemMatch: { $eq: req.user._id } } })
             .populate("users", "-password")
             .populate("groupAdmin", "-password")
@@ -140,7 +143,7 @@ const groupAdd = asyncHandler(async (req, res) => {
         {
             users: { $elemMatch: { $eq: userId } }
         })
-    console.log(checkUser)
+    //   console.log(checkUser)
     if (checkUser.users?.length > 0) {
         res.status(400)
         return res.send("User already part of group")

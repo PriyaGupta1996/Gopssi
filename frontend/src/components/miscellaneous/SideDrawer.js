@@ -28,7 +28,6 @@ const SideDrawer = () => {
         if (!search) {
             alert("Please enter something to begin the search")
         }
-        console.log(user)
 
         try {
             setLoading(true)
@@ -41,16 +40,19 @@ const SideDrawer = () => {
             const { data } = await axios.get(`/api/user?search=${search}`, config)
             setLoading(false)
             setSearchResult(data)
+            console.log("result", searchResult)
 
         } catch (error) {
 
-            alert("Error occured, failed to load the search results")
+            alert("Error occurred, failed to load the search results")
 
         }
 
     }
 
     const accessChat = async (userId) => {
+        console.log("selected user", userId)
+
         try {
             setLoading(true)
             const config = {
@@ -60,7 +62,7 @@ const SideDrawer = () => {
 
             const { data } = await axios.post("/api/chat", { userId }, config)
 
-            //console.log("hellllooo", data)
+            //  console.log("hellllooo friends", data)
             if (!chats.find((c) => c._id === data._id))
                 setChats([data, ...chats])
 
@@ -127,7 +129,7 @@ const SideDrawer = () => {
                             >Go</Button>
                         </Box>
 
-                        {loading ? (<ChatLoading />) : (searchResult?.map(user => (  //optional chainig
+                        {loading ? (<ChatLoading />) : (searchResult?.map(user => (
                             <UserListItem
                                 key={user._id}
                                 user={user}

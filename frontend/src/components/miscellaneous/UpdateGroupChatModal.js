@@ -5,7 +5,7 @@ import { ChatState } from '../../Context/ChatProvider'
 import UserBadgeItem from "../UserAvatar/UserBadgeItem"
 import UserListItem from '../UserAvatar/UserListItem'
 import axios from 'axios'
-const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
+const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessage }) => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const { selectedChat, setSelectedChat, user } = ChatState()
     const [selectedUsers, setSelectedUsers] = useState(selectedChat.users)
@@ -149,7 +149,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
             const { data } = await axios.put("/api/chat/groupRemove", { chatId: selectedChat._id, userId: userToRemove._id }, config)
             userToRemove._id === user._id ? setSelectedChat() : setSelectedChat(data)
             setFetchAgain(!fetchAgain)
-
+            fetchMessage()
             setSelectedUsers(data.users)
             setLoading(false)
 

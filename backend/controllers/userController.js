@@ -90,7 +90,7 @@ const allUsers = asyncHandler(async (req, res) => {
             { email: { $regex: req.query.search, $options: "i" } }
         ]
     } : {};
-    console.log(JSON.stringify(keyword))
+    //  console.log(JSON.stringify(keyword))
     const users = await User.find(keyword).find({ _id: { $ne: req.user._id } })
     //   console.log(users)
     res.send(users)
