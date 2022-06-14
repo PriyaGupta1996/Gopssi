@@ -8,7 +8,8 @@ import { useDisclosure } from '@chakra-ui/hooks'
 import axios from 'axios'
 import ChatLoading from '../ChatLoading'
 import UserListItem from '../UserAvatar/UserListItem'
-
+import { getSender } from '../../config/ChatLogics'
+import NotificationBadge, { Effect } from "react-notification-badge"
 
 
 const SideDrawer = () => {
@@ -16,10 +17,10 @@ const SideDrawer = () => {
     const [searchResult, setSearchResult] = useState([])
     const [loading, setLoading] = useState(false)
     const [loadingChat, setLoadingChat] = useState()
-    const { user, setSelectedChat, chats, setChats } = ChatState()
+    const { user, setSelectedChat, chats, setChats, notifications, setNotifications } = ChatState()
     const history = useHistory()
     const { isOpen, onClose, onOpen } = useDisclosure()
-
+    console.log("notification:", notifications)
     const logoutHandler = () => {
         localStorage.removeItem("userInfo")
         history.push("/")
@@ -93,8 +94,22 @@ const SideDrawer = () => {
                 <div>
                     <Menu>
                         <MenuButton p={1}>
-                            <BellIcon font="2xl" m={1} />
+                            <NotificationBadge
+                                count={notifications.length}
+                                effect={Effect.SCALE} />
+                            < BellIcon font="2xl" m={1} />
                         </MenuButton>
+                        <MenuList pl={2}>
+                            {!notifications.length && "No new Messages"}
+                            {notifications.map(notify => (
+                                <MenuItem key={notify.id} onClick={() => {
+                                    setSelectedChat(notify.chat);
+                                    setNotifications(notifications.filter((n) => n !== notify))
+                                }}>
+                                    {notify.chat.IsGroupChat ? `New Message from ${notify.chat.chatName}` : `New Message from ${getSender(user, notify.chat.users)}`}
+                                </MenuItem>
+                            ))}
+                        </MenuList>
                     </Menu>
                     <Menu>
                         <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>

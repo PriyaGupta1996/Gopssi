@@ -20,7 +20,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     const [messages, setmessages] = useState([])
     const [loading, setloading] = useState(false)
     const [newMessage, setnewMessage] = useState()
-    const { user, selectedChat, setSelectedChat } = ChatState()
+    const { user, selectedChat, setSelectedChat, notifications, setNotifications } = ChatState()
     const [socketConnected, setsocketConnected] = useState(false)
     const [Typing, setTyping] = useState(false)
     const [IsTyping, setIsTyping] = useState(false)
@@ -51,7 +51,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         socket.on("message received", (newMessageRecieved) => {
             console.log("inside message received socket")
             if (!selectedChatCompare || selectedChatCompare._id !== newMessageRecieved.chat._id) {
-                //give notification
+                if (!notifications.includes(newMessageRecieved)) {
+                    setNotifications([newMessageRecieved, ...notifications])
+                    setFetchAgain(!fetchAgain)
+                }
             }
             else {
                 setmessages([...messages, newMessageRecieved])
@@ -73,7 +76,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 setnewMessage("")
                 const { data } = await axios.post('/api/message', { content: newMessage, chatId: selectedChat._id }, config)
                 setmessages([...messages, data])
-                //  console.log("chat is++++++++++++++++", data)
+                console.log("chat is++++++++++++++++", data)
                 socket.emit('new message', data)
             } catch (err) {
                 alert("Failed to send message")
