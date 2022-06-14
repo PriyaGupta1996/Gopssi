@@ -6,6 +6,8 @@ import { getSender, getSenderFull } from "../config/ChatLogics"
 import ProfileModal from "../components/miscellaneous/ProfileModal"
 import UpdateGroupChatModal from "../components/miscellaneous/UpdateGroupChatModal"
 import ScrollableChat from "../components/ScrollableChat"
+import Lottie from "react-lottie"
+import animationData from "../animations/typing.json"
 import axios from "axios"
 import "./style.css"
 import io from "socket.io-client"
@@ -20,12 +22,24 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     const [newMessage, setnewMessage] = useState()
     const { user, selectedChat, setSelectedChat } = ChatState()
     const [socketConnected, setsocketConnected] = useState(false)
-
+    const [Typing, setTyping] = useState(false)
+    const [IsTyping, setIsTyping] = useState(false)
+    const defaultOptions = {
+        loop: true,
+        autoPlay: true,
+        animationData: animationData,
+        renderSettings: {
+            preserveAspectRatio: "xMidYMid slice"
+        }
+    }
     useEffect(() => {
         socket = io(ENDPOINT)
         socket.emit("setup", user)
 
-        socket.on("connection", () => setsocketConnected(true))
+        socket.on("connected", () => setsocketConnected(true))
+        socket.on("Typing", () => setIsTyping(true))
+        socket.on("Stop Typing", () => setIsTyping(false))
+
     }, [])
 
     useEffect(() => {
@@ -45,14 +59,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         })
     })
 
-
-
-
-
-
     const sendMessage = async (e) => {
         //    console.log("helloo", selectedChat)
         if (e.key === "Enter" && newMessage) {
+            socket.emit('Stop Typing', selectedChat._id)
             try {
                 const config = {
                     headers: {
@@ -63,7 +73,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 setnewMessage("")
                 const { data } = await axios.post('/api/message', { content: newMessage, chatId: selectedChat._id }, config)
                 setmessages([...messages, data])
-                console.log("chat is++++++++++++++++", data)
+                //  console.log("chat is++++++++++++++++", data)
                 socket.emit('new message', data)
             } catch (err) {
                 alert("Failed to send message")
@@ -73,9 +83,34 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
 
 
-    const typingHandler = (e) => { setnewMessage(e.target.value) }
+    const typingHandler = (e) => {
+        setnewMessage(e.target.value)
 
-    console.log("helllooo", selectedChat)
+        if (!socketConnected)
+            return
+        if (!Typing) {
+            setTyping(true)
+            socket.emit('Typing', selectedChat._id)
+        }
+
+        let lastTypingTime = new Date().getTime()
+        let timeLength = 3000
+
+        setTimeout(() => {
+            let timeNow = new Date().getTime()
+            let timeDiff = timeNow - lastTypingTime
+            if (timeDiff >= timeLength && Typing) {
+                socket.emit("Stop Typing", selectedChat._id)
+                setTyping(false)
+
+            }
+
+        }, timeLength)
+
+
+    }
+
+    // console.log("helllooo", selectedChat)
 
     const fetchMessage = async () => {
         console.log(selectedChat)
@@ -136,6 +171,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                                 <ScrollableChat messages={messages} />
                             </div>
                             <FormControl onKeyDown={sendMessage} isRequired mt={3}>
+                                {IsTyping ? <div> <Lottie options={defaultOptions} width={70} style={{ marginBottom: 14, marginLeft: 0 }} /></div> : <></>}
                                 <Input variant="filled" bg="#e0e0e0" placeholder="Enter a message..." onChange={typingHandler} value={newMessage} />
                             </FormControl>
                         </>}
