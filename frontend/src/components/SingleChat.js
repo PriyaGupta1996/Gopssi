@@ -8,11 +8,47 @@ import UpdateGroupChatModal from "../components/miscellaneous/UpdateGroupChatMod
 import ScrollableChat from "../components/ScrollableChat"
 import axios from "axios"
 import "./style.css"
+import io from "socket.io-client"
+
+const ENDPOINT = "http://localhost:5000"
+let socket, selectedChatCompare
+
+
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     const [messages, setmessages] = useState([])
     const [loading, setloading] = useState(false)
     const [newMessage, setnewMessage] = useState()
     const { user, selectedChat, setSelectedChat } = ChatState()
+    const [socketConnected, setsocketConnected] = useState(false)
+
+    useEffect(() => {
+        socket = io(ENDPOINT)
+        socket.emit("setup", user)
+
+        socket.on("connection", () => setsocketConnected(true))
+    }, [])
+
+    useEffect(() => {
+        fetchMessage()
+        selectedChatCompare = selectedChat
+    }, [selectedChat])
+
+    useEffect(() => {
+        socket.on("message received", (newMessageRecieved) => {
+            console.log("inside message received socket")
+            if (!selectedChatCompare || selectedChatCompare._id !== newMessageRecieved.chat._id) {
+                //give notification
+            }
+            else {
+                setmessages([...messages, newMessageRecieved])
+            }
+        })
+    })
+
+
+
+
+
 
     const sendMessage = async (e) => {
         //    console.log("helloo", selectedChat)
@@ -27,13 +63,16 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 setnewMessage("")
                 const { data } = await axios.post('/api/message', { content: newMessage, chatId: selectedChat._id }, config)
                 setmessages([...messages, data])
-                console.log(data)
+                console.log("chat is++++++++++++++++", data)
+                socket.emit('new message', data)
             } catch (err) {
                 alert("Failed to send message")
             }
 
         }
     }
+
+
     const typingHandler = (e) => { setnewMessage(e.target.value) }
 
     console.log("helllooo", selectedChat)
@@ -52,16 +91,13 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             setmessages(data)
             setloading(false)
             console.log(messages)
-
+            socket.emit('join chat', selectedChat._id)
         } catch (error) {
             alert("404, Not Found")
         }
     }
 
 
-    useEffect(() => {
-        fetchMessage()
-    }, [selectedChat])
 
     return (
         <>
