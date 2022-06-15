@@ -13,7 +13,7 @@ import "./style.css"
 import io from "socket.io-client"
 
 const ENDPOINT_LOCAL = "http://localhost:5000"
-const ENDPOINT = "https://gopssi.herokuapp.com/"
+const ENDPOINT = "https://gopssi.herokuapp.com"
 let socket, selectedChatCompare
 
 
