@@ -161,7 +161,7 @@ const Signup = () => {
             // })
             alert("Please select an image")
             setLoading(false)
-            setPic(" ")
+
             return
         } // api call
     }

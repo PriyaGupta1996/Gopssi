@@ -2,7 +2,7 @@
 const express = require("express")
 const dotenv = require("dotenv")
 const colors = require("colors")
-
+const path = require("path")
 
 //custom modules
 const chats = require("./data/data.js")
@@ -12,6 +12,7 @@ const messageRoutes = require("./routes/messageRoutes")
 const chatRoutes = require("../backend/routes/chatRoutes")
 const { notFound, errorHandler } = require("../backend/middleware/errorMiddleware")
 
+
 //express instance
 const app = express()
 dotenv.config()
@@ -19,13 +20,25 @@ connectDB()
 
 app.use(express.json()); // to accept JSON data
 
-app.get("/", (req, res) => {
-    res.send("API is running successfully here !!")
-})
-
 app.use('/api/user', userRoutes)
 app.use('/api/chat', chatRoutes)
 app.use('/api/message', messageRoutes)
+
+/*..........................Deployments--------------------*/
+
+const __dirname1 = path.resolve()
+
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname1, "/frontend/build")))
+    app.get('*', (req, res) => {
+        res.sendFile(path.resolve(__dirname1, "frontend", "build", "index.html"))
+    })
+
+} else {
+    app.get("/", (req, res) => { res.send("API running successfully") })
+}
+
+/*..........................Deployments--------------------*/
 
 
 app.use(notFound)
@@ -70,10 +83,10 @@ io.on("connection", (socket) => {
         if (!chat.users)
             return console.log("chat.users not defined")
         chat.users.forEach(user => {
-            if (user === newMessageRecieved.sender._id)
+            if (user._id === newMessageRecieved.sender._id)
                 return
-            console.log("inside new message socket", user)
-            socket.in(user).emit("message received", newMessageRecieved)
+            //    console.log("inside new message socket", user)
+            socket.in(user._id).emit("message received", newMessageRecieved)
         })
 
         socket.off("setup", () => {

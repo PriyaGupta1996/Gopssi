@@ -34,9 +34,11 @@ const sendMessage = asyncHandler(async (req, res) => {
 
     try {
         let message = await Message.create(newMessage)
-        //   console.log(message);
+        //    console.log("Priya's message:", JSON.stringify(message.chat));
+
         message = await User.populate(message, { path: "sender", select: "name pic" })
         message = await Chat.populate(message, { path: "chat", select: "chatName IsGroupChat users latestMessage groupAdmin" })
+        message = await User.populate(message, { path: "chat.users", select: "name pic" })
 
 
         await Chat.findByIdAndUpdate(req.body.chatId, { latestMessage: message });
