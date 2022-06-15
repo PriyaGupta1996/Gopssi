@@ -3,7 +3,7 @@ const userModel = mongoose.Schema({
     name: { type: String, requried: true },
     email: { type: String, requried: true, unique: true },
     password: { type: String, requried: true },
-    pic: { type: String, default:"https://cdn-icons.flaticon.com/png/512/1144/premium/1144709.png?token=exp=1655296909~hmac=b27d7ad89bd383bd8b60ab4f63395479" },
+    pic: { type: String, default:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUIOJUSPGIWdaRmeUqgbRAYwfugtpgySi3Qv34NKI8JeXDzFGFOgpA7s-T2WKUqHnCgP8&usqp=CAU" },
 },
     {
         timestamps: true
