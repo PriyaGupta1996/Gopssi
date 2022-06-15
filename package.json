@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "description": "Awesome real time messaging chat app",
   "main": "index.js",
-   "engines": {
+  "engines": {
     "node": "14.16.x"
   },
   "scripts": {
     "start:dev": "nodemon backend/server.js  --ignore client",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start":"node backend/server.js",
-    "heroku-postbuild":"NPM_CONFIG_PRODUCTION=false npm install --prefix frontend && npm run build --prefix frontend"
+    "start": "node backend/server.js",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix frontend && npm run build --prefix frontend"
   },
   "repository": {
     "type": "git",
