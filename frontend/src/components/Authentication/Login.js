@@ -74,6 +74,13 @@ const Login = () => {
         document.getElementById("Email").value = email
         document.getElementById("Pass").value = password
     }
+
+    const onChangePasswordHandler = (e) => {
+        if (e.key === "Enter") {
+            submitHander()
+        }
+    }
+
     return (
         <VStack spacing="5px">
             <FormControl id='Email' isRequired>
@@ -92,6 +99,7 @@ const Login = () => {
                         type={showPass ? "text" : "password"}
                         placeholder="Enter Your Password"
                         onChange={(e) => { setPassword(e.target.value) }}
+                        onKeyDown={onChangePasswordHandler}
                     />
                     <InputRightElement width="4.5rem">
                         <Button h="1.75rem" size="sm" onClick={handleClickPass}>
